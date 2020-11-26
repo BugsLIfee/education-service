@@ -1,7 +1,10 @@
 package com.erbf.bugsLife.edu.application.web.dto;
 
-import com.erbf.bugsLife.edu.domain.EduReview;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -11,8 +14,9 @@ import lombok.*;
 public class EduReviewDto {
 	
 	private Long id;
-	private String writerId;
+	private Long writerId;
 	private String writerName;
+	private int writerLevel;
 	private String eduId;
 	private String academyId;
 	private String title;
@@ -20,6 +24,7 @@ public class EduReviewDto {
 	private String unrecommend;
 	private String registDate;
 	private String updateDate;
+	private String eduTitle;
 	private float eduRate;
 	private float lecRate;
 	private float facRate;
@@ -27,19 +32,5 @@ public class EduReviewDto {
 	private double reivewsRate;
 	private int adReport;
 	private boolean isBlind;
-
-	
-	public EduReview toEntity() {
-		return EduReview.builder()
-		 		.title(this.title)
-				.recommend(this.recommend)
-				.unrecommend(this.unrecommend)
-				.eduRate(this.eduRate)
-				.lecRate(this.lecRate)
-				.facRate(this.facRate)
-				.empRate(this.empRate)
-				.build();
-	}
-	
 	
 }

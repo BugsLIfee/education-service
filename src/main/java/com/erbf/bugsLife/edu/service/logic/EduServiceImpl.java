@@ -1,9 +1,19 @@
 package com.erbf.bugsLife.edu.service.logic;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.erbf.bugsLife.edu.application.web.dto.AcademyDetailDto;
 import com.erbf.bugsLife.edu.application.web.dto.EduAcademyDto;
 import com.erbf.bugsLife.edu.application.web.dto.EduInfoDto;
 import com.erbf.bugsLife.edu.application.web.dto.EduReviewDto;
+import com.erbf.bugsLife.edu.application.web.dto.EduReviewModifyDto;
 import com.erbf.bugsLife.edu.domain.EduAcademy;
 import com.erbf.bugsLife.edu.domain.EduInfo;
 import com.erbf.bugsLife.edu.domain.EduReview;
@@ -11,14 +21,6 @@ import com.erbf.bugsLife.edu.repository.EduAcademyRepository;
 import com.erbf.bugsLife.edu.repository.EduInfoRepository;
 import com.erbf.bugsLife.edu.repository.EduReviewRepository;
 import com.erbf.bugsLife.edu.service.EduService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -33,9 +35,12 @@ public class EduServiceImpl implements EduService{
 	@Autowired
 	EduAcademyRepository eduAcademyRepo;
 	
+//	@Autowired
+//	UserRepository userRepo;
+	
 	@Override
 	public List<EduInfoDto> eduInfoList() {
-		List<EduInfo> eduInfos = eduInfoRepo.findAll();
+		List<EduInfo> eduInfos = eduInfoRepo.findAllByOrderByStartDateDesc();
 		List<EduInfoDto> eduInfoDtos = eduInfos.stream().map(EduInfo::toDto).collect(Collectors.toList());
 		eduInfoDtos.stream().forEach(
 				eduInfoDto -> eduInfoDto.setReviewCnt(
@@ -67,25 +72,26 @@ public class EduServiceImpl implements EduService{
 		EduInfoDto eduInfoDto = eduInfo.map(EduInfo::toDto).get();
 		
 		eduInfoDto.setEduRate(
-//				eduReviewRepo.findByEduId(eduInfoDto.getId()).isEmpty() ? 0 :
-						eduReviewRepo.findByEduId(eduInfoDto.getId()).stream()
+						eduReviewRepo.findByEduId(eid).stream()
 						.map(EduReview::toDto).collect(Collectors.toList())
 						.stream().mapToDouble(EduReviewDto::getReivewsRate).sum()
-						/eduReviewRepo.findByEduId(eduInfoDto.getId()).size());
+						/eduReviewRepo.findByEduId(eid).size());
 		
-//		List<EduReview> eduReviews = eduReviewRepo.findByEduId(eid);
-//		List<EduReviewDto> eduReviewDtos = eduReviews.stream().map(EduReview::toDto).collect(Collectors.toList());
-//		eduInfoDto.setReviews(eduReviews.stream().map(EduReview::toDto).collect(Collectors.toList()));
+		List<EduReview> reviews = eduReviewRepo.findByEduId(eid);
+		List<EduReviewDto> reviewDtos = reviews.stream().map(EduReview::toDto).collect(Collectors.toList());
 		
-//		EduDetailDto eduDetaiDto = EduDetailDto.builder()
-//				.eduInfo(eduInfoDto)
-//				.eduReviews(eduReviewDtos)
-//				.build();
-				
-//		return eduDetaiDto;
+//		reviewDtos.stream().forEach(
+//				reviewDto -> {
+//					User writer = userRepo.findById(reviewDto.getWriterId()).get();
+//					reviewDto.setWriterName(writer.getName());
+//					reviewDto.setWriterLevel(writer.getLevel());
+//				}
+//		);
 		
-		eduInfoDto.setReviews(eduReviewRepo.findByEduId(eduInfoDto.getId()).stream()
-					.map(EduReview::toDto).collect(Collectors.toList()));
+//		eduInfoDto.setReviews(reviews.stream()
+//					.map(EduReview::toDto).collect(Collectors.toList()));
+		
+		eduInfoDto.setReviews(reviewDtos);
 		
 		return eduInfoDto;
 	}
@@ -96,15 +102,31 @@ public class EduServiceImpl implements EduService{
 		Optional<EduAcademy> academy = eduAcademyRepo.findById(aid);
 		EduAcademyDto academyDto = academy.map(EduAcademy::toDto).get();
 		
+		academyDto.setAcademyRate(
+				eduReviewRepo.findByAcademyId(aid).stream()
+				.map(EduReview::toDto).collect(Collectors.toList())
+				.stream().mapToDouble(EduReviewDto::getReivewsRate).sum()
+				/eduReviewRepo.findByAcademyId(aid).size()
+		);
+		
 		List<EduInfo> infos = eduInfoRepo.findByAcademyId(aid);
 		List<EduInfoDto> infoDtos = infos.stream().map(EduInfo::toDto).collect(Collectors.toList());
 		
-//		List<EduReview> reviews = eduReviewRepo.findByAcademyId(aid);
-//		List<EduReviewDto> reviewDtos = reviews.stream().map(EduReview::toDto).collect(Collectors.toList());
-		
 		infoDtos.stream().forEach(
 					infoDto -> infoDto.setReviews(eduReviewRepo.findByEduId(infoDto.getId()).stream()
-					.map(EduReview::toDto).collect(Collectors.toList())));
+					.map(EduReview::toDto).collect(Collectors.toList()))
+		);
+		
+//		List<EduReview> reviews = eduReviewRepo.findByEduId(aid);
+//		List<EduReviewDto> reviewDtos = reviews.stream().map(EduReview::toDto).collect(Collectors.toList());
+		
+//		reviewDtos.stream().forEach(
+//				reviewDto -> {
+//					User writer = userRepo.findById(reviewDto.getWriterId()).get();
+//					reviewDto.setWriterName(writer.getName());
+//					reviewDto.setWriterLevel(writer.getLevel());
+//				}
+//		);
 		
 		AcademyDetailDto academyDetailDto = AcademyDetailDto.builder()
 				.eduAcademys(academyDto)
@@ -117,7 +139,6 @@ public class EduServiceImpl implements EduService{
 	@Override
 	public void eduReviewCreate(EduReviewDto eduReviewDto) {
 		eduReviewRepo.save(EduReview.builder()
-				.id(eduReviewDto.getId())
 				.writerId(eduReviewDto.getWriterId())
 				.eduId(eduReviewDto.getEduId())
 				.academyId(eduReviewDto.getAcademyId())
@@ -125,7 +146,7 @@ public class EduServiceImpl implements EduService{
 				.recommend(eduReviewDto.getRecommend())
 				.unrecommend(eduReviewDto.getUnrecommend())
 				.registDate(EduServiceImpl.getDate())
-				//.updateDate(EduServiceImpl.getDate())
+				.eduTitle(eduReviewDto.getEduTitle())
 				.eduRate(eduReviewDto.getEduRate())
 				.lecRate(eduReviewDto.getLecRate())
 				.facRate(eduReviewDto.getFacRate())
@@ -138,7 +159,30 @@ public class EduServiceImpl implements EduService{
 						)
 				.build());
 	}
+
+	@Override
+	public void eduReviewDelete(Long rid) {
+		eduReviewRepo.deleteById(rid);
+	}
+
+	@Override
+	public void eduReviewUpdate(Long rid, EduReviewModifyDto eduReviewDto) {
+		Optional<EduReview> originalReview = eduReviewRepo.findById(rid);
+		EduReview newReview = eduReviewDto.toEntity(originalReview.get());
+		eduReviewRepo.save(newReview);
+	}
+
+	@Override
+	public EduReview getReview(Long rid) {
+		return eduReviewRepo.findById(rid).get();
+	}
 	
+	@Override
+	public Long checkReview(Long wid, String eid) {
+		Long reviewCnt = eduReviewRepo.countByWriterIdAndEduId(wid,eid);
+		return reviewCnt;
+	}
+
 	private static String getDate() {
         Date date = new Date();
         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");

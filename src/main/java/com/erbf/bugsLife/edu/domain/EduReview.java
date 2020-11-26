@@ -1,12 +1,18 @@
 package com.erbf.bugsLife.edu.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+
 import com.erbf.bugsLife.edu.application.web.dto.EduReviewDto;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 @Getter
 @Setter
@@ -27,7 +33,7 @@ public class EduReview {
 	)
 	private Long id;
 	
-	private String writerId;
+	private Long writerId;
 	private String eduId;
 	private String academyId;
 	private String title;
@@ -35,6 +41,7 @@ public class EduReview {
 	private String unrecommend;
 	private String registDate;
     private String updateDate;
+    private String eduTitle;
     
     @Column(columnDefinition = "float default 0")
 	private float eduRate;
@@ -54,8 +61,8 @@ public class EduReview {
 	private boolean isBlind;
 	
 	@Builder
-	public EduReview(Long id, String writerId, String eduId, String academyId, String title, String recommend, String unrecommend,
-			String registDate, String updateDate, float eduRate, float lecRate, float facRate, float empRate, double reviewsRate, int adReport,
+	public EduReview(Long id, Long writerId, String eduId, String academyId, String title, String recommend, String unrecommend,
+			String registDate, String updateDate, String eduTitle, float eduRate, float lecRate, float facRate, float empRate, double reviewsRate, int adReport,
 			boolean isBlind) {
 		super();
 		this.id = id;
@@ -67,6 +74,7 @@ public class EduReview {
 		this.unrecommend = unrecommend;
 		this.registDate = registDate;
 		this.updateDate = updateDate;
+		this.eduTitle = eduTitle;
 		this.eduRate = eduRate;
 		this.lecRate = lecRate;
 		this.facRate = facRate;
@@ -87,6 +95,7 @@ public class EduReview {
 				.unrecommend(this.unrecommend)
 				.registDate(this.registDate)
 				.updateDate(this.updateDate)
+				.eduTitle(this.eduTitle)
 				.eduRate(this.eduRate)
 				.lecRate(this.lecRate)
 				.facRate(this.facRate)
@@ -99,5 +108,8 @@ public class EduReview {
 		return eduInfoDto;
 	}
 	
+	public void addAdReport() {
+		this.adReport = this.adReport + 1;
+	}
 	
 }
