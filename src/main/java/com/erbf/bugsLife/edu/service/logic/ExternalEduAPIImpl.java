@@ -138,12 +138,19 @@ public class ExternalEduAPIImpl implements ExternalEduAPI {
 			System.out.println(academyId);
 			if (bNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) bNode;
+				String homePg;
+				try {
+					homePg = getTagValue("hpAddr", eElement);
+				}catch(NullPointerException e) {
+					homePg = null;
+				}
+				
 				eduAcademyRepo.save(EduAcademy.builder()
 					.id(academyId)
 					.address(getTagValue("addr1", eElement))
 					.telephone(telNo)
 					.title(academyTitle)
-					.homePage(getTagValue("hpAddr", eElement))
+					.homePage(homePg)
 					.build()
 				);
 			}

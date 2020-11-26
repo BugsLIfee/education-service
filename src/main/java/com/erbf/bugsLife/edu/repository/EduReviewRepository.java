@@ -11,6 +11,4 @@ public interface EduReviewRepository extends JpaRepository<EduReview, Long>{
 	List<EduReview> findByEduId(String eduInfoId);
 	List<EduReview> findByAcademyId(String eduAcademyId);
 	Long countByWriterIdAndEduId(Long wid, String eid);
-	
-	
 }
