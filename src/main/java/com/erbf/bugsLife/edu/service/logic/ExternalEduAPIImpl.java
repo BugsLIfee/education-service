@@ -132,7 +132,7 @@ public class ExternalEduAPIImpl implements ExternalEduAPI {
 			doc.getDocumentElement().normalize();
 			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 
-			// �Ľ��� tag
+			//tag
 			NodeList baseInfo = doc.getElementsByTagName("inst_base_info");
 			Node bNode = baseInfo.item(0);
 			System.out.println(academyId);

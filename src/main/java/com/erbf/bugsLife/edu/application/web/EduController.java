@@ -72,12 +72,12 @@ public class EduController {
 		eduService.eduReviewUpdate(rid, modifyDto);
 	}
 	
-	@PutMapping("/{rid}/adReport")
-	public void adReport(@PathVariable Long rid) {
-		EduReview review = eduService.getReview(rid);
-		review.addAdReport();
-		eduReviewRepo.save(review);
-	}
+//	@PutMapping("/{rid}/adReport")
+//	public void adReport(@PathVariable Long rid) {
+//		EduReview review = eduService.getReview(rid);
+//		review.addAdReport();
+//		eduReviewRepo.save(review);
+//	}
 	
 	@DeleteMapping("/reviewDelete/{rid}")
 	public void deleteReview(@PathVariable Long rid) {
